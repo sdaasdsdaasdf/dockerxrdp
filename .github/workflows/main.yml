@@ -1,0 +1,30 @@
+name: CloudMiner Auto Claim
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Runs every day at 6:00 AM UTC — change to your preferred time
+  workflow_dispatch:        # Also allows manual trigger from GitHub Actions tab
+
+jobs:
+  claim:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install playwright
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Run CloudMiner automation
+        env:
+          URL_SECRET: ${{ secrets.URL }}
+        run: python cloudminer_auto.py
